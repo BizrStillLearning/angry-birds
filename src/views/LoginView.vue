@@ -102,22 +102,22 @@ const handleAuth = async () => {
         <div v-if="!isLogin" class="space-y-4 md:space-y-5" v-motion :initial="{ opacity: 0, height: 0 }" :enter="{ opacity: 1, height: 'auto', transition: { duration: 300 } }">
           <div>
             <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Nama Lengkap</label>
-            <input v-model="form.nama_lengkap" type="text" class="w-full px-4 py-3 text-sm md:text-base bg-slate-950/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Masukkan nama asli" />
+            <input v-model.trim="form.nama_lengkap" type="text" class="w-full px-4 py-3 text-sm md:text-base bg-slate-950/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Masukkan nama lengkap" />
           </div>
           <div>
             <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Username</label>
-            <input v-model="form.username" type="text" class="w-full px-4 py-3 text-sm md:text-base bg-slate-950/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Pilih nama panggilan" />
+            <input v-model.trim="form.username" type="text" class="w-full px-4 py-3 text-sm md:text-base bg-slate-950/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="Masukkan Username" />
           </div>
         </div>
 
         <div v-motion :initial="{ opacity: 0, x: -30 }" :enter="{ opacity: 1, x: 0, transition: { delay: 300 } }">
           <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Email</label>
-          <input v-model="form.email" type="email" class="w-full px-4 py-3 text-sm md:text-base bg-slate-950/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="pilot@astrosling.com" />
+          <input v-model.trim="form.email" type="email" class="w-full px-4 py-3 text-sm md:text-base bg-slate-950/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="user@gmail.com" />
         </div>
 
         <div v-motion :initial="{ opacity: 0, x: 30 }" :enter="{ opacity: 1, x: 0, transition: { delay: 400 } }">
           <label class="block text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Password</label>
-          <input v-model="form.password" type="password" class="w-full px-4 py-3 text-sm md:text-base bg-slate-950/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="••••••••" />
+          <input v-model.trim="form.password" type="password" class="w-full px-4 py-3 text-sm md:text-base bg-slate-950/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="••••••••" />
         </div>
 
         <div v-motion :initial="{ opacity: 0, y: 30 }" :enter="{ opacity: 1, y: 0, transition: { delay: 500, type: 'spring' } }">
