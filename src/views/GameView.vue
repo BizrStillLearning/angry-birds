@@ -138,15 +138,29 @@ const selectAmmo = (ammoType) => {
   }
 }
 
-onMounted(() => {
-  const canvasContainer = document.getElementById('game-canvas')
-  if (canvasContainer) {
-    initPhysics(canvasContainer, currentPlanetId, activePlanet.matter_g, handleScoreUpdate, handleAmmoUsed)
-    setTimeout(() => { isPhysicsReady.value = true }, 500)
+const initGameIfLandscape = () => {
+  if (window.innerWidth > window.innerHeight) {
+    const canvasContainer = document.getElementById('game-canvas')
+    if (canvasContainer && !isPhysicsReady.value) {
+      initPhysics(canvasContainer, currentPlanetId, activePlanet.matter_g, handleScoreUpdate, handleAmmoUsed)
+      setTimeout(() => { isPhysicsReady.value = true }, 500)
+    }
   }
+}
+
+const handleResize = () => {
+  setTimeout(initGameIfLandscape, 300)
+}
+
+onMounted(() => {
+  initGameIfLandscape()
+  window.addEventListener('resize', handleResize)
 })
 
-onUnmounted(() => { destroyPhysics() })
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+  destroyPhysics()
+})
 
 const exitGame = () => router.push('/')
 const restartGame = () => window.location.reload()
@@ -336,4 +350,3 @@ const restartGame = () => window.location.reload()
   to { transform: translateX(-50%); }
 }
 </style>
-

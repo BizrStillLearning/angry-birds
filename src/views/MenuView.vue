@@ -17,15 +17,14 @@ const planets = computed(() => {
 })
 
 const selectedPlanet = ref('1')
-const isMenuOpen = ref(false)
-const showLeaderboard = ref(false)
 
 const router = useRouter()
 const authStore = useAuthStore()
 const scoreStore = useScoreStore()
 
+const showLeaderboard = ref(false)
+
 const openLeaderboard = async () => {
-  isMenuOpen.value = false
   showLeaderboard.value = true
   await scoreStore.fetchLeaderboard(selectedPlanet.value)
 }
@@ -50,7 +49,7 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <div class="min-h-[100dvh] flex flex-col bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-950 to-black text-slate-100 relative overflow-x-hidden">
+  <div class="min-h-screen p-4 md:p-8 flex flex-col bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-950 to-black text-slate-100 relative overflow-hidden">
 
     <div class="stars stars-small"></div>
     <div class="stars stars-medium"></div>
@@ -63,29 +62,22 @@ const handleLogout = async () => {
         v-motion
         :initial="{ opacity: 0, y: -30 }"
         :enter="{ opacity: 1, y: 0, transition: { delay: 100, duration: 600, type: 'spring' } }"
-        class="flex justify-between items-center p-4 md:p-8 relative z-30"
+        class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10 md:mb-16 relative z-10"
     >
-      <h1 class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-emerald-400 to-teal-300 drop-shadow-lg tracking-wider">
+      <h1 class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-emerald-400 to-teal-300 drop-shadow-lg tracking-wider text-center">
         AstroSling
       </h1>
 
-      <button @click="isMenuOpen = !isMenuOpen" class="md:hidden text-slate-300 hover:text-white p-2">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path v-if="!isMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-          <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-
-      <div class="hidden md:flex items-center gap-3">
+      <div class="flex flex-wrap justify-center items-center gap-3 w-full md:w-auto">
         <button @click="openLeaderboard" class="flex items-center justify-center p-2.5 bg-slate-900/60 backdrop-blur-md border border-yellow-500/50 text-yellow-400 rounded-full hover:bg-yellow-500/20 hover:text-yellow-300 transition-all hover:scale-110 shadow-[0_0_15px_rgba(234,179,8,0.2)]" title="Leaderboard Global">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
         </button>
 
-        <div class="flex items-center gap-2 bg-slate-900/60 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700/50 shadow-lg">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-emerald-500 flex items-center justify-center font-bold text-base text-white shadow-inner">
+        <div class="flex items-center gap-2 md:gap-3 bg-slate-900/60 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700/50 shadow-lg">
+          <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-gradient-to-tr from-blue-600 to-emerald-500 flex items-center justify-center font-bold text-xs md:text-base text-white shadow-inner">
             {{ authStore.namaLengkap ? authStore.namaLengkap.charAt(0).toUpperCase() : 'U' }}
           </div>
-          <span class="font-bold text-sm tracking-wide text-slate-200">{{ authStore.namaLengkap || 'Space Cadet' }}</span>
+          <span class="font-bold text-xs md:text-sm tracking-wide text-slate-200">{{ authStore.namaLengkap || 'Space Cadet' }}</span>
         </div>
 
         <button @click="handleLogout" class="p-2.5 bg-slate-900/60 backdrop-blur-md border border-red-900/50 text-red-400 rounded-full hover:bg-red-900/80 hover:text-red-300 transition-all hover:scale-110 shadow-lg" title="Keluar Sistem">
@@ -94,37 +86,18 @@ const handleLogout = async () => {
       </div>
     </header>
 
-    <div v-if="isMenuOpen"
-         v-motion
-         :initial="{ opacity: 0, y: -20 }"
-         :enter="{ opacity: 1, y: 0 }"
-         class="md:hidden absolute top-20 right-4 w-56 bg-slate-900/95 backdrop-blur-xl border border-slate-700 rounded-2xl p-4 z-40 flex flex-col gap-4 shadow-2xl">
-      <div class="flex items-center gap-3 border-b border-slate-700 pb-3">
-        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-emerald-500 flex items-center justify-center font-bold text-sm text-white">
-          {{ authStore.namaLengkap ? authStore.namaLengkap.charAt(0).toUpperCase() : 'U' }}
-        </div>
-        <span class="font-bold text-sm text-slate-200 truncate">{{ authStore.namaLengkap || 'Space Cadet' }}</span>
-      </div>
-      <button @click="openLeaderboard" class="text-left font-bold text-yellow-400 flex items-center gap-3">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg> Leaderboard
-      </button>
-      <button @click="handleLogout" class="text-left font-bold text-red-400 flex items-center gap-3">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg> Keluar
-      </button>
-    </div>
-
-    <main class="flex-1 flex flex-col items-center pt-4 pb-12 px-4 overflow-y-auto relative z-10 w-full max-w-5xl mx-auto">
+    <main class="flex-1 flex flex-col items-center justify-center max-w-5xl mx-auto w-full relative z-10 pb-10">
 
       <div
           v-motion
           :initial="{ opacity: 0, scale: 0.8 }"
           :enter="{ opacity: 1, scale: 1, transition: { delay: 300, type: 'spring' } }"
-          class="inline-block px-6 py-2 mb-8 rounded-full border border-slate-700/50 bg-slate-800/30 backdrop-blur-sm"
+          class="inline-block px-4 py-2 md:px-6 md:py-2 mb-8 md:mb-10 rounded-full border border-slate-700/50 bg-slate-800/30 backdrop-blur-sm"
       >
         <h2 class="text-lg md:text-2xl font-black text-center tracking-widest text-slate-300 uppercase">Pilih Sektor Planet</h2>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-10">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 w-full mb-10 md:mb-16 px-4 md:px-0">
         <button
             v-for="(planet, index) in planets"
             :key="planet.id"
@@ -148,7 +121,7 @@ const handleLogout = async () => {
             </svg>
           </div>
 
-          <h3 class="text-2xl md:text-3xl font-black mb-2 relative z-10 drop-shadow-md">{{ planet.name }}</h3>
+          <h3 class="text-2xl md:text-3xl font-black mb-2 md:mb-3 relative z-10 drop-shadow-md">{{ planet.name }}</h3>
 
           <div class="relative z-10 flex items-center gap-2 mt-auto">
             <span class="text-slate-400 text-[10px] md:text-xs uppercase tracking-widest font-bold">Gravitasi</span>
@@ -169,7 +142,7 @@ const handleLogout = async () => {
           :initial="{ opacity: 0, y: 30 }"
           :enter="{ opacity: 1, y: 0, transition: { delay: 900, type: 'spring' } }"
           @click="playGame"
-          class="w-full md:w-auto mt-auto relative px-10 md:px-20 py-4 md:py-5 bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-500 hover:to-emerald-400 text-white text-lg md:text-xl font-black tracking-widest rounded-2xl overflow-hidden group shadow-[0_0_30px_rgba(16,185,129,0.3)] transform transition-all active:scale-95 flex-shrink-0"
+          class="w-[90%] md:w-auto relative px-10 md:px-20 py-4 md:py-5 bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-500 hover:to-emerald-400 text-white text-lg md:text-xl font-black tracking-widest rounded-2xl overflow-hidden group shadow-[0_0_30px_rgba(16,185,129,0.3)] transform transition-all active:scale-95"
       >
         <span class="relative z-10">LUNCURKAN</span>
         <div class="absolute inset-0 h-full w-full bg-white/20 group-hover:translate-x-full transition-transform duration-500 -translate-x-full skew-x-12"></div>
