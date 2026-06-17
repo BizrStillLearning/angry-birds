@@ -49,14 +49,14 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen p-4 md:p-8 flex flex-col bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-950 to-black text-slate-100 relative overflow-hidden">
+  <div class="min-h-screen p-4 md:p-8 flex flex-col bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-950 to-black text-slate-100 relative overflow-x-hidden">
 
     <div class="stars stars-small"></div>
     <div class="stars stars-medium"></div>
     <div class="stars stars-large"></div>
 
-    <div class="absolute top-[-10%] left-[-10%] w-72 h-72 md:w-96 md:h-96 bg-blue-600/10 rounded-full blur-[80px] md:blur-[100px] animate-float-1 pointer-events-none"></div>
-    <div class="absolute bottom-[-10%] right-[-10%] w-72 h-72 md:w-96 md:h-96 bg-emerald-600/10 rounded-full blur-[80px] md:blur-[100px] animate-float-2 pointer-events-none"></div>
+    <div class="fixed top-[-10%] left-[-10%] w-72 h-72 md:w-96 md:h-96 bg-blue-600/10 rounded-full blur-[80px] md:blur-[100px] animate-float-1 pointer-events-none"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-72 h-72 md:w-96 md:h-96 bg-emerald-600/10 rounded-full blur-[80px] md:blur-[100px] animate-float-2 pointer-events-none"></div>
 
     <header
         v-motion
@@ -86,7 +86,7 @@ const handleLogout = async () => {
       </div>
     </header>
 
-    <main class="flex-1 flex flex-col items-center justify-center max-w-5xl mx-auto w-full relative z-10 pb-10">
+    <main class="flex-1 flex flex-col items-center justify-start md:justify-center max-w-5xl mx-auto w-full relative z-10 pb-10 mt-4 md:mt-0">
 
       <div
           v-motion
@@ -149,7 +149,7 @@ const handleLogout = async () => {
       </button>
     </main>
 
-    <div v-if="showLeaderboard" class="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+    <div v-if="showLeaderboard" class="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4 fixed">
       <div
           v-motion
           :initial="{ opacity: 0, scale: 0.9 }"
@@ -206,7 +206,7 @@ const handleLogout = async () => {
 
 <style scoped>
 .stars {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;

@@ -7,12 +7,11 @@ let currentProjectile = null
 let currentSling = null
 let mouseConstraint = null
 
-let slingX = 300
-let slingY = 500
+let slingX = 0
+let slingY = 0
 
 let damageTexts = []
 let isWorldSettling = true;
-
 let currentHpMultiplier = 1.0;
 
 const CATEGORY_DEFAULT = 0x0001;
@@ -32,7 +31,6 @@ const materialData = {
 
 const createBlock = (x, y, w, h, materialType) => {
     const mat = materialData[materialType] || materialData.kayu;
-    // 2. SEKARANG CREATE BLOCK BISA MEMBACA MULTIPLIER INI
     const finalHp = mat.maxHp * currentHpMultiplier;
 
     return Matter.Bodies.rectangle(x, y, w, h, {
@@ -61,12 +59,16 @@ export const initPhysics = (containerElement, planetId, gravityValue, onScoreUpd
     const width = window.innerWidth
     const height = window.innerHeight
 
-    slingX = Math.max(100, width * 0.15)
-    slingY = height - (height < 600 ? 150 : 250)
+    const isMobile = height < 600;
+    const scale = isMobile ? 0.7 : 1.0;
 
-    const castleX = Math.min(width - 150, width * 0.85)
-    const floorY = height - 50
-    const obstacleX = castleX - Math.min(300, width * 0.3)
+    const floorY = height - (isMobile ? 80 : 100);
+
+    slingX = width * 0.15;
+    slingY = floorY - (100 * scale);
+
+    const castleX = width * 0.80;
+    const obstacleX = width * 0.50;
 
     render = Render.create({
         element: containerElement,
@@ -74,11 +76,11 @@ export const initPhysics = (containerElement, planetId, gravityValue, onScoreUpd
         options: { width, height, wireframes: false, background: 'transparent' }
     })
 
-    const ground = Bodies.rectangle(width / 2, height - 20, width, 60, {
+    const ground = Bodies.rectangle(width / 2, floorY + 100, width * 2, 200, {
         isStatic: true, label: 'ground', render: { fillStyle: '#1e293b' }, collisionFilter: { category: CATEGORY_DEFAULT }
     })
 
-    currentProjectile = Bodies.circle(slingX, slingY, 20, {
+    currentProjectile = Bodies.circle(slingX, slingY, 20 * scale, {
         label: 'proyektil',
         density: ammoPhysicsData['kayu'].density,
         restitution: ammoPhysicsData['kayu'].restitution,
@@ -94,31 +96,35 @@ export const initPhysics = (containerElement, planetId, gravityValue, onScoreUpd
     })
 
     const enemyTexture = 'data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="20" fill="%23ef4444"/><circle cx="12" cy="15" r="5" fill="white"/><circle cx="28" cy="15" r="5" fill="white"/><circle cx="12" cy="15" r="2" fill="black"/><circle cx="28" cy="15" r="2" fill="black"/><path d="M 12 28 Q 20 22 28 28" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'
+    const enemyRadius = 20 * scale;
 
     const enemyMaxHp = 60 * currentHpMultiplier;
     const enemyOptions = {
         label: 'target', density: 0.02, restitution: 0.2,
-        render: { sprite: { texture: enemyTexture, xScale: 1, yScale: 1 }, opacity: 1.0 },
+        render: { sprite: { texture: enemyTexture, xScale: scale, yScale: scale }, opacity: 1.0 },
         collisionFilter: { category: CATEGORY_DEFAULT },
         plugin: { hp: enemyMaxHp, maxHp: enemyMaxHp }
     }
 
+    const bw = 20 * scale;
+    const bh = 80 * scale;
+
     const levelBodies = [
-        Bodies.rectangle(obstacleX, floorY - 80, 30, 160, { isStatic: true, render: { fillStyle: '#334155' }, collisionFilter: { category: CATEGORY_DEFAULT } }),
-        createBlock(castleX - 120, floorY - 40, 20, 80, 'kayu'),
-        createBlock(castleX, floorY - 40, 20, 80, 'kaca'),
-        createBlock(castleX + 120, floorY - 40, 20, 80, 'kayu'),
-        Bodies.circle(castleX - 60, floorY - 20, 20, enemyOptions),
-        Bodies.circle(castleX + 60, floorY - 20, 20, enemyOptions),
-        createBlock(castleX, floorY - 90, 300, 20, 'batu'),
-        createBlock(castleX - 80, floorY - 140, 20, 80, 'kayu'),
-        createBlock(castleX + 80, floorY - 140, 20, 80, 'kayu'),
-        Bodies.circle(castleX, floorY - 120, 20, enemyOptions),
-        createBlock(castleX, floorY - 190, 220, 20, 'batu'),
-        createBlock(castleX - 40, floorY - 240, 20, 80, 'kaca'),
-        createBlock(castleX + 40, floorY - 240, 20, 80, 'kaca'),
-        createBlock(castleX, floorY - 290, 100, 20, 'kayu'),
-        Bodies.circle(castleX, floorY - 220, 20, enemyOptions),
+        Bodies.rectangle(obstacleX, floorY - (80*scale), 30*scale, 160*scale, { isStatic: true, render: { fillStyle: '#334155' }, collisionFilter: { category: CATEGORY_DEFAULT } }),
+        createBlock(castleX - (100*scale), floorY - (bh/2), bw, bh, 'kayu'),
+        createBlock(castleX, floorY - (bh/2), bw, bh, 'kaca'),
+        createBlock(castleX + (100*scale), floorY - (bh/2), bw, bh, 'kayu'),
+        Bodies.circle(castleX - (50*scale), floorY - enemyRadius, enemyRadius, enemyOptions),
+        Bodies.circle(castleX + (50*scale), floorY - enemyRadius, enemyRadius, enemyOptions),
+        createBlock(castleX, floorY - bh - (10*scale), 260*scale, 20*scale, 'batu'),
+        createBlock(castleX - (60*scale), floorY - bh - (20*scale) - (bh/2), bw, bh, 'kayu'),
+        createBlock(castleX + (60*scale), floorY - bh - (20*scale) - (bh/2), bw, bh, 'kayu'),
+        Bodies.circle(castleX, floorY - bh - (20*scale) - enemyRadius, enemyRadius, enemyOptions),
+        createBlock(castleX, floorY - (bh*2) - (30*scale), 180*scale, 20*scale, 'batu'),
+        createBlock(castleX - (30*scale), floorY - (bh*2) - (40*scale) - (bh/2), bw, bh, 'kaca'),
+        createBlock(castleX + (30*scale), floorY - (bh*2) - (40*scale) - (bh/2), bw, bh, 'kaca'),
+        Bodies.circle(castleX, floorY - (bh*2) - (40*scale) - enemyRadius, enemyRadius, enemyOptions),
+        createBlock(castleX, floorY - (bh*3) - (50*scale), 80*scale, 20*scale, 'kayu'),
     ]
 
     const mouse = Mouse.create(render.canvas)
@@ -130,6 +136,32 @@ export const initPhysics = (containerElement, planetId, gravityValue, onScoreUpd
     render.mouse = mouse
 
     render.canvas.addEventListener('contextmenu', (e) => { e.stopPropagation(); }, true);
+
+    Events.on(engine, 'beforeUpdate', () => {
+        if (mouseConstraint.mouse.button !== -1 && mouseConstraint.body === currentProjectile) {
+            const maxDrag = 120 * scale;
+            const dx = currentProjectile.position.x - slingX;
+            const dy = currentProjectile.position.y - slingY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            let newX = currentProjectile.position.x;
+            let newY = currentProjectile.position.y;
+
+            if (dist > maxDrag) {
+                newX = slingX + (dx / dist) * maxDrag;
+                newY = slingY + (dy / dist) * maxDrag;
+            }
+
+            const groundLimit = floorY - (22 * scale);
+            if (newY > groundLimit) {
+                newY = groundLimit;
+            }
+
+            if (newX !== currentProjectile.position.x || newY !== currentProjectile.position.y) {
+                Matter.Body.setPosition(currentProjectile, { x: newX, y: newY });
+            }
+        }
+    });
 
     Events.on(engine, 'collisionStart', (event) => {
         if (isWorldSettling) return;
@@ -187,7 +219,7 @@ export const initPhysics = (containerElement, planetId, gravityValue, onScoreUpd
         const anchorY = currentSling.pointA.y;
 
         ctx.beginPath();
-        ctx.arc(anchorX, anchorY, 12, 0, 2 * Math.PI);
+        ctx.arc(anchorX, anchorY, 12 * scale, 0, 2 * Math.PI);
         ctx.fillStyle = 'rgba(56, 189, 248, 0.2)';
         ctx.fill();
         ctx.lineWidth = 2;
@@ -195,7 +227,7 @@ export const initPhysics = (containerElement, planetId, gravityValue, onScoreUpd
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.arc(anchorX, anchorY, 4, 0, 2 * Math.PI);
+        ctx.arc(anchorX, anchorY, 4 * scale, 0, 2 * Math.PI);
         ctx.fillStyle = '#bae6fd';
         ctx.fill();
 
@@ -207,7 +239,7 @@ export const initPhysics = (containerElement, planetId, gravityValue, onScoreUpd
             ctx.moveTo(anchorX, anchorY);
             ctx.lineTo(startX, startY);
             ctx.strokeStyle = '#94a3b8';
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 4 * scale;
             ctx.stroke();
 
             if (mouseConstraint.mouse.button === 0 && mouseConstraint.body === currentProjectile) {
@@ -219,7 +251,7 @@ export const initPhysics = (containerElement, planetId, gravityValue, onScoreUpd
                 ctx.lineTo(anchorX + (pullX * 3), anchorY + (pullY * 3));
                 ctx.setLineDash([8, 8]);
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 2 * scale;
                 ctx.stroke();
                 ctx.setLineDash([]);
             }
@@ -229,10 +261,10 @@ export const initPhysics = (containerElement, planetId, gravityValue, onScoreUpd
             let dt = damageTexts[i];
             ctx.globalAlpha = dt.alpha;
             ctx.fillStyle = dt.color;
-            ctx.font = "900 24px 'Courier New', monospace";
+            ctx.font = `900 ${24 * scale}px 'Courier New', monospace`;
             ctx.textAlign = "center";
             ctx.strokeStyle = "rgba(0,0,0,0.8)";
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 4 * scale;
             ctx.strokeText(dt.text, dt.x, dt.y);
             ctx.fillText(dt.text, dt.x, dt.y);
 
@@ -252,11 +284,14 @@ export const reloadProjectile = (type) => {
     if (!engine) return
     const props = ammoPhysicsData[type] || ammoPhysicsData['kayu']
 
+    const isMobile = window.innerHeight < 600;
+    const scale = isMobile ? 0.7 : 1.0;
+
     if (currentProjectile && currentSling.bodyB === currentProjectile) {
         Matter.Composite.remove(engine.world, currentProjectile)
     }
 
-    currentProjectile = Matter.Bodies.circle(slingX, slingY, 20, {
+    currentProjectile = Matter.Bodies.circle(slingX, slingY, 20 * scale, {
         label: 'proyektil',
         density: props.density,
         restitution: props.restitution,
